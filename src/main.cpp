@@ -90,12 +90,12 @@ static void key_callback(GLFWwindow *window, const int key, int scancode, const 
  * @return 程序退出状态码
  */
 int main() {
-    std::fstream file1("vert.vert");
+    std::fstream file1("shader/vert.vert");
     if (!file1.is_open()) {
         std::cerr << "Failed to open vertex shader file." << std::endl;
         return -1;
     }
-    std::fstream file2("frag.frag");
+    std::fstream file2("shader/frag.frag");
     if (!file2.is_open()) {
         std::cerr << "Failed to open fragment shader file." << std::endl;
         return -1;
@@ -112,26 +112,19 @@ int main() {
     static const char* fragment_shader_text = source2.c_str();
 
 
+    // 初始化GLFW库
+    if (!glfwInit())
+        return -1;
 
     // 设置GLFW的错误回调函数，这样当GLFW内部发生错误时会调用我们定义的error_callback函数
     glfwSetErrorCallback(error_callback);
 
     // 配置GLFW，指定我们要使用的OpenGL版本和配置
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);      // 主版本号为3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);      // 次版本号为3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);      // 主版本号为3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);      // 次版本号为3
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 使用OpenGL核心配置文件
 
-    // 初始化GLFW库
-    // 如果初始化失败则返回-1表示程序异常退出
-    if (!glfwInit())
-        return -1;
 
-    // 创建一个窗口对象
-    // 参数说明：
-    // - 800, 600: 窗口尺寸（宽800像素，高600像素）
-    // - "Hello OpenGL": 窗口标题
-    // - nullptr: 不使用全屏模式
-    // - nullptr: 不与其它窗口共享上下文
     GLFWwindow* window = glfwCreateWindow(
         800, 600,
         "Hello OpenGL",
@@ -139,26 +132,21 @@ int main() {
         nullptr);
 
     // 检查窗口是否创建成功
-    // 如果创建失败，则终止GLFW并返回-1
     if (!window) {
         glfwTerminate();
         return -1;
     }
 
     // 设置窗口的键盘按键回调函数
-    // 当有键盘事件发生时会调用key_callback函数
     glfwSetKeyCallback(window, key_callback);
 
     // 设置当前OpenGL上下文为该窗口的上下文
-    // 这样之后所有的OpenGL调用都会作用于这个窗口
     glfwMakeContextCurrent(window);
     
     // 加载OpenGL函数指针（通过glad库）
-    // 这一步是必须的，因为OpenGL函数地址在不同系统和驱动下可能不同
     gladLoadGL(glfwGetProcAddress);
     
     // 启用垂直同步（V-Sync）
-    // 参数1表示每帧都等待垂直回扫信号，可以防止画面撕裂
     glfwSwapInterval(1);
 
     // 创建一个OpenGL缓冲区对象来存储顶点数据
@@ -166,28 +154,32 @@ int main() {
     glGenBuffers(1, &vertex_buffer);                   // 生成一个缓冲区对象
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);      // 绑定缓冲区对象为目标（顶点数组缓冲区）
     // 将顶点数据上传到GPU显存中
-    // 参数说明：
-    // - GL_ARRAY_BUFFER: 目标缓冲区类型
-    // - sizeof(vertices): 数据大小
-    // - vertices: 数据指针
-    // - GL_STATIC_DRAW: 使用模式（数据很少更改，主要用于绘制）
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,
+        sizeof(vertices),
+        vertices,
+        GL_STATIC_DRAW);
 
     // 编译顶点着色器
     const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);          // 创建顶点着色器对象
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, nullptr);         // 设置着色器源代码
-    glCompileShader(vertex_shader);                                        // 编译着色器
+    glShaderSource(vertex_shader,
+        1,
+        &vertex_shader_text,
+        nullptr);         // 设置着色器源代码
+    glCompileShader(vertex_shader);    // 编译着色器
 
     // 编译片元着色器
     const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);      // 创建片元着色器对象
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, nullptr);     // 设置着色器源代码
-    glCompileShader(fragment_shader);                                      // 编译着色器
+    glShaderSource(fragment_shader,
+        1,
+        &fragment_shader_text,
+        nullptr);     // 设置着色器源代码
+    glCompileShader(fragment_shader);   // 编译着色器
 
     // 创建着色器程序并链接着色器
-    const GLuint program = glCreateProgram();                               // 创建程序对象
-    glAttachShader(program, vertex_shader);                                // 将顶点着色器附加到程序
-    glAttachShader(program, fragment_shader);                              // 将片元着色器附加到程序
-    glLinkProgram(program);                                                // 链接着色器程序
+    const GLuint program = glCreateProgram();   // 创建程序对象
+    glAttachShader(program, vertex_shader);     // 将顶点着色器附加到程序
+    glAttachShader(program, fragment_shader);   // 将片元着色器附加到程序
+    glLinkProgram(program);                     // 链接着色器程序
 
     // 获取着色器程序中各个变量的位置（句柄），以便后续可以设置它们的值
     const GLint mvp_location = glGetUniformLocation(program, "MVP");        // MVP矩阵统一变量位置
@@ -195,44 +187,29 @@ int main() {
     const GLint vcol_location = glGetAttribLocation(program, "vCol");       // 顶点颜色属性位置
 
     // 创建并设置顶点数组对象（VAO）
-    // VAO用于存储顶点属性的配置信息
-    GLuint vertex_array;                                                   // 声明VAO对象ID
-    glGenVertexArrays(1, &vertex_array);                                   // 生成一个VAO对象
-    glBindVertexArray(vertex_array);                                       // 绑定VAO对象
-
-    /*
-    // 创建并设置元素缓冲区对象（EBO）
-    // EBO用于存储顶点索引数据，以便重用顶点
-    GLuint element_buffer;                                           // 声明EBO对象ID
-    glGenBuffers(1, &element_buffer);                              // 生成一个EBO对象
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);     // 绑定EBO对象为目标（元素数组缓冲区）
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(indices),
-                 indices,
-                 GL_STATIC_DRAW);                               // 将索引数据上传到GPU显存中
-                 */
+    GLuint vertex_array;     // 声明VAO对象ID
+    glGenVertexArrays(1, &vertex_array);  // 生成一个VAO对象
+    glBindVertexArray(vertex_array);       // 绑定VAO对象
     
     // 启用顶点属性数组并设置其格式
-    // 位置属性设置
-    glEnableVertexAttribArray(vpos_location);                              // 启用位置属性数组
+    glEnableVertexAttribArray(vpos_location); // 启用位置属性数组
     // 设置位置属性的格式和来源
-    glVertexAttribPointer(vpos_location,                                    // 属性位置
-                          2,                                               // 每个顶点的分量数（x,y坐标）
-                          GL_FLOAT,                                        // 数据类型
-                          GL_FALSE,                                        // 是否标准化
-                          sizeof(Vertex),                                  // 步长（顶点结构体大小）
-                          reinterpret_cast<void *>(offsetof(Vertex, pos))); // 在结构体中的偏移量
+    glVertexAttribPointer(vpos_location,
+                          2,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(Vertex),
+                          reinterpret_cast<void *>(offsetof(Vertex, pos)));
     
     // 颜色属性设置
-    glEnableVertexAttribArray(vcol_location);                              // 启用颜色属性数组
+    glEnableVertexAttribArray(vcol_location); // 启用颜色属性数组
     // 设置颜色属性的格式和来源
-    glVertexAttribPointer(vcol_location,                                    // 属性位置
-                          3,                                               // 每个顶点的分量数（r,g,b颜色值）
-                          GL_FLOAT,                                        // 数据类型
-                          GL_FALSE,                                        // 是否标准化
-                          sizeof(Vertex),                                  // 步长（顶点结构体大小）
-                          reinterpret_cast<void *>(offsetof(Vertex, col))); // 在结构体中的偏移量
-
+    glVertexAttribPointer(vcol_location,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(Vertex),
+                          reinterpret_cast<void *>(offsetof(Vertex, col)));
 
     // 主渲染循环 - 持续运行直到窗口被要求关闭
     while (!glfwWindowShouldClose(window)) {
@@ -253,9 +230,6 @@ int main() {
         // 初始化模型矩阵为单位矩阵
         mat4x4_identity(m);
         
-        // 对模型矩阵应用绕Z轴旋转的变换，旋转角度基于程序运行时间动态计算
-        mat4x4_rotate_Z(m, m, static_cast<float>(glfwGetTime()));
-        
         // 创建正交投影矩阵，参数分别为左右上下远近裁剪面
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         
@@ -266,23 +240,15 @@ int main() {
         glUseProgram(program);
         
         // 将计算好的MVP矩阵传递给着色器程序中的统一变量
-        glUniformMatrix4fv(mvp_location,                                    // 统一变量位置
-                           1,                                              // 矩阵数量
-                           GL_FALSE,                                       // 是否转置矩阵
-                           reinterpret_cast<const GLfloat *>(&mvp));       // 矩阵数据指针
-        /*
-        // 绑定VAO并绘制三角形
-        glBindVertexArray(vertex_array);
-        glDrawElements(GL_TRIANGLES,
-                6,
-                GL_UNSIGNED_INT,
-                nullptr);
-        // 另一种绘制方式，直接使用顶点数组绘制
-        */
-        glDrawArrays(GL_TRIANGLES,                                           // 绘制模式（三角形）
-                     0,                                                      // 起始顶点索引
-                     6);                                                     // 绘制的顶点数量
+        glUniformMatrix4fv(mvp_location,
+                           1,
+                           GL_FALSE,
+                           reinterpret_cast<const GLfloat *>(&mvp));
 
+        // 绑定VAO，准备绘制
+        glDrawArrays(GL_TRIANGLES,
+                     0,
+                     6);
 
         // 交换前后缓冲区，显示新绘制的帧
         glfwSwapBuffers(window);
@@ -292,7 +258,7 @@ int main() {
     }
 
     // 渲染循环结束后清理资源
-    glfwDestroyWindow(window);                                             // 销毁窗口
+    glfwDestroyWindow(window); // 销毁窗口
 
     // 清理并关闭GLFW
     glfwTerminate();
