@@ -5,6 +5,10 @@ project(oscgui
         LANGUAGES C CXX
 )
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install" CACHE PATH "" FORCE)
+endif()
+
 # =========================
 # 基本编译选项
 # =========================
@@ -34,10 +38,10 @@ add_library(oscgui STATIC
         src/renderer.cpp
 
         third_party/glad/src/gl.c
-        include/oscgui/oscgui_gui.cpp
+        src/oscgui_gui.cpp
         include/oscgui/oscgui_gui.h
         include/oscgui/oscgui_types.h
-        include/oscgui/oscgui_components.cpp
+        src/oscgui_components.cpp
         include/oscgui/oscgui_components.h
 )
 
@@ -61,7 +65,10 @@ target_include_directories(oscgui
 
 # 平台相关的 OpenGL 链接
 if(WIN32)
-    target_link_libraries(oscgui PRIVATE glfw opengl32)
+    target_link_libraries(oscgui
+            PUBLIC glfw
+            PRIVATE opengl32
+    )
 else()
     find_package(OpenGL REQUIRED)
     target_link_libraries(oscgui PRIVATE glfw OpenGL::GL)
