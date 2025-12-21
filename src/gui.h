@@ -31,7 +31,7 @@ namespace gui {
         vec2 mouse_pos_{};
         bool mouse_down_ = false;
 
-    private:
+        // 输入处理
         void poll_input();
     };
 

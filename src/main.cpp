@@ -211,14 +211,14 @@ void init_gui() {
     btn.size = {100.f, 50.f};
     btn.normal_color = Colors::white;
     btn.hover_color = Colors::red;
-    btn.press_color = Colors::blue;
+    btn.pressed_color = Colors::blue;
     btn.OnClick = click;
 
     btn2.position = {400.f, 300.f};
     btn2.size = {100.f, 50.f};
     btn2.normal_color = Colors::white;
     btn2.hover_color = Colors::red;
-    btn2.press_color = Colors::blue;
+    btn2.pressed_color = Colors::blue;
     btn2.OnClick = click2;
 }
 int main() {

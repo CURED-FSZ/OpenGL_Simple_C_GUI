@@ -32,10 +32,13 @@ add_library(oscgui STATIC
         src/components.cpp
         src/gui.cpp
         src/renderer.cpp
-        src/input.cpp
 
-        # glad 只作为实现文件
         third_party/glad/src/gl.c
+        include/oscgui/oscgui_gui.cpp
+        include/oscgui/oscgui_gui.h
+        include/oscgui/oscgui_types.h
+        include/oscgui/oscgui_components.cpp
+        include/oscgui/oscgui_components.h
 )
 
 # 启用有用的编译警告（强烈建议）
@@ -70,6 +73,7 @@ endif()
 add_executable(oscgui_exe EXCLUDE_FROM_ALL
         src/main.cpp
         src/gui.h
+        src/renderer.h
 )
 
 # oscgui_exe 是“特权程序”，可以直接用 OpenGL / glad
