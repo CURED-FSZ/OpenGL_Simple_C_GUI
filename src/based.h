@@ -5,6 +5,7 @@
 #ifndef OPENGL_C_GUI_BASED_H
 #define OPENGL_C_GUI_BASED_H
 
+#include <string>
 #include <vector>
 
 struct vec2 {
@@ -86,6 +87,8 @@ namespace components {
     public:
         virtual ~Component() = default;
 
+        std::string id;
+
         // ===== 几何属性 =====
         vec2 position{}; // 左上角
         vec2 size{}; // 宽高
@@ -98,11 +101,21 @@ namespace components {
         bool enabled = true;
 
         // ===== 点击事件 =====
-        void (* OnClick)(Component* self);
+        void (* OnClick)(Component* self) = nullptr;
+        void* c_handle = nullptr;   // C bridge 用
 
         // ===== 核心接口 =====
+        /**
+         * 绘制组件
+         * @param out 输出的顶点数据
+         */
         virtual void draw(std::vector<Vertex> &out) const = 0;
 
+        /**
+         * 更新组件状态
+         * @param mouse_pos 鼠标位置
+         * @param mouse_down 鼠标是否按下
+         */
         virtual void update(const vec2 &mouse_pos, bool mouse_down) = 0;
 
     protected:
@@ -119,9 +132,12 @@ namespace components {
     // 按钮
     class Button : public Component {
     public:
-        Color normal_color;
-        Color hover_color;
-        Color press_color;
+        // 按钮颜色
+        Color normal_color{};
+        // 按钮颜色（鼠标悬停时）
+        Color hover_color{};
+        // 按钮颜色（鼠标按下时）
+        Color pressed_color{};
 
         void draw(std::vector<Vertex> &out) const override;
 

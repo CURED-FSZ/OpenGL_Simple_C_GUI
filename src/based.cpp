@@ -119,7 +119,7 @@ namespace components {
         Color color{};
         switch (state) {
             case ComponentState::Hovered: color = hover_color; break;
-            case ComponentState::Pressed: color = press_color; break;
+            case ComponentState::Pressed: color = pressed_color; break;
             default: color = normal_color; break;
         }
 
