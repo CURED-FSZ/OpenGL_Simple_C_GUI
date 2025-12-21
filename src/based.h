@@ -13,30 +13,48 @@ struct vec2 {
     float y;
 };
 
-struct vec3 {
+struct vec4 {
     float x;
     float y;
     float z;
+    float w;
 };
 
 // 顶点
 struct Vertex {
     vec2 pos; // 顶点的二维位置坐标
-    vec3 col; // 顶点的颜色值（RGB格式）
+    vec4 col; // 顶点的颜色值（RGB格式）
 };
 
+// 颜色结构体
 struct Color {
-    float r, g, b;
+    float r, g, b, a;
 };
 
 namespace Colors {
-    constexpr Color red = {1.0f, 0.0f, 0.0f};
-    constexpr Color green = {0.0f, 1.0f, 0.0f};
-    constexpr Color blue = {0.0f, 0.0f, 1.0f};
-    constexpr Color white = {1.0f, 1.0f, 1.0f};
-    constexpr Color black = {0.0f, 0.0f, 0.0f};
-    constexpr Color yellow = {1.0f, 1.0f, 0.0f};
-    constexpr Color purple = {1.0f, 0.0f, 1.0f};
+    constexpr Color red = {1.0f, 0.0f, 0.0f, 1.0f}; // 红
+    constexpr Color green = {0.0f, 1.0f, 0.0f, 1.0f}; // 绿
+    constexpr Color blue = {0.0f, 0.0f, 1.0f, 1.0f}; // 蓝
+    constexpr Color white = {1.0f, 1.0f, 1.0f, 1.0f}; // 白
+    constexpr Color black = {0.0f, 0.0f, 0.0f, 1.0f}; // 黑
+    constexpr Color yellow = {1.0f, 1.0f, 0.0f, 1.0f}; // 黄
+    constexpr Color purple = {1.0f, 0.0f, 1.0f, 1.0f}; // 紫
+    constexpr Color gray = {0.5f, 0.5f, 0.5f, 1.0f}; // 灰
+    constexpr Color light_gray = {0.8f, 0.8f, 0.8f, 1.0f}; // 浅灰
+    constexpr Color dark_gray = {0.2f, 0.2f, 0.2f, 1.0f}; // 深灰
+    constexpr Color orange = {1.0f, 0.5f, 0.0f, 1.0f}; // 橙
+    constexpr Color cyan = {0.0f, 1.0f, 1.0f, 1.0f}; // 青
+    constexpr Color magenta = {1.0f, 0.0f, 1.0f, 1.0f}; // 品红
+    constexpr Color brown = {0.6f, 0.3f, 0.0f, 1.0f}; // 棕
+    constexpr Color pink = {1.0f, 0.75f, 0.8f, 1.0f}; // 粉
+    constexpr Color lime = {0.0f, 1.0f, 0.0f, 1.0f}; // 酸橙
+    constexpr Color navy = {0.0f, 0.0f, 0.5f, 1.0f}; // 海军蓝
+    constexpr Color olive = {0.5f, 0.5f, 0.0f, 1.0f}; // 橄榄
+    constexpr Color teal = {0.0f, 0.5f, 0.5f, 1.0f}; // 水鸭色
+    constexpr Color maroon = {0.5f, 0.0f, 0.0f, 1.0f}; // 栗色
+    constexpr Color silver = {0.75f, 0.75f, 0.75f, 1.0f}; // 银
+    constexpr Color gold = {1.0f, 0.84f, 0.0f, 1.0f}; // 金
+    constexpr Color transparent = {0.0f, 0.0f, 0.0f, 0.0f}; // 透明
 }
 
 namespace shapes {
@@ -133,11 +151,11 @@ namespace components {
     class Button : public Component {
     public:
         // 按钮颜色
-        Color normal_color{};
+        Color normal_color = Colors::light_gray;
         // 按钮颜色（鼠标悬停时）
-        Color hover_color{};
+        Color hover_color = Colors::gray;
         // 按钮颜色（鼠标按下时）
-        Color pressed_color{};
+        Color pressed_color = Colors::dark_gray;
 
         void draw(std::vector<Vertex> &out) const override;
 

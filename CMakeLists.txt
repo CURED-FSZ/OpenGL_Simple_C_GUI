@@ -33,9 +33,7 @@ add_subdirectory(third_party/glfw)
 
 add_library(oscgui STATIC
         src/based.cpp
-        src/components.cpp
         src/gui.cpp
-        src/renderer.cpp
 
         third_party/glad/src/gl.c
         src/oscgui_gui.cpp
@@ -56,11 +54,12 @@ endif()
 # 头文件管理（改进版）
 target_include_directories(oscgui
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # 构建时路径
-        $<INSTALL_INTERFACE:include>  # 安装后路径（为 make install 准备）
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/linmath
 )
 
 # 平台相关的 OpenGL 链接
@@ -81,6 +80,7 @@ add_executable(oscgui_exe EXCLUDE_FROM_ALL
         src/main.cpp
         src/gui.h
         src/renderer.h
+        src/renderer.cpp
 )
 
 # oscgui_exe 是“特权程序”，可以直接用 OpenGL / glad

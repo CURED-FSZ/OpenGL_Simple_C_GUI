@@ -292,7 +292,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
 }
 
-GLFWAPI void glfwWindowHint(int hint, int value)
+GLFWAPI void glfwWindowHint(const int hint, const int value)
 {
     _GLFW_REQUIRE_INIT();
 
@@ -431,12 +431,13 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
             return;
+        default: ;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
 }
 
-GLFWAPI void glfwWindowHintString(int hint, const char* value)
+GLFWAPI void glfwWindowHintString(const int hint, const char* value)
 {
     assert(value != NULL);
 
@@ -460,6 +461,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value)
             strncpy(_glfw.hints.window.wl.appId, value,
                     sizeof(_glfw.hints.window.wl.appId) - 1);
             return;
+        default: ;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);

@@ -24,6 +24,7 @@
 // ========================
 #include "based.h"
 #include "gui.h"
+#include "renderer.h"
 
 /**
  * @brief GLFW错误回调函数
@@ -74,6 +75,9 @@ void init_GLFW()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // 启用多重采样抗锯齿
+    glfwWindowHint(GLFW_SAMPLES, 4);
 }
 
 /**
@@ -124,24 +128,6 @@ GLFWwindow* create_window(const int w, const int h, const char* title)
 }
 
 /**
- * @brief 获取文件内容
- *
- * 从给定的路径中读取文件内容，并返回一个字符串
- * @param path 文件路径
- * @return 文件内容字符串
- */
-std::string get_file_content(const char* path)
-{
-    const std::ifstream file(path);
-    if (!file)
-        throw std::runtime_error("failed to open file");
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
-/**
  * @brief 创建着色器程序
  *
  * 创建一个着色器程序，并链接顶点着色器和片元着色器
@@ -170,6 +156,10 @@ GLuint create_program(const char* vs_src, const char* fs_src)
     // 删除中间着色器对象
     glDeleteShader(vs);
     glDeleteShader(fs);
+
+    // 启用混合以支持透明度
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return prog;
 }
@@ -221,18 +211,19 @@ void init_gui() {
     btn2.pressed_color = Colors::blue;
     btn2.OnClick = click2;
 }
+
+
+
 int main() {
-    const std::string vert = get_file_content("shader/vert.vert");
-    const std::string frag = get_file_content("shader/frag.frag");
-    // 读取顶点着色器文件内容到字符串
-    const char *vertex_shader_text = vert.c_str();
-    const char* fragment_shader_text = frag.c_str();
+    Renderer renderer;
 
     std::vector<Vertex> vertices;
     vertices.reserve(1024); // 给 GUI 用，避免频繁扩容
 
     // 创建窗口
     GLFWwindow* window = create_window(800, 600, "Hello OpenGL");
+
+    renderer.init(800, 600);
 
     init_gui();
     gui::GUI ui(window);
@@ -252,94 +243,18 @@ int main() {
     // 设置窗口图标
     glfwSetWindowIcon(window, 1, &image);
 
-    // 加载OpenGL函数指针（通过glad库）
-    gladLoadGL(glfwGetProcAddress);
-
-    // 创建着色器程序并链接着色器
-    const GLuint program = create_program(vertex_shader_text, fragment_shader_text);
-
-    // 获取着色器程序中各个变量的位置（句柄），以便后续可以设置它们的值
-    const GLint mvp_location = glGetUniformLocation(program, "MVP");        // MVP矩阵统一变量位置
-    const GLint vpos_location = glGetAttribLocation(program, "vPos");       // 顶点位置属性位置
-    const GLint vcol_location = glGetAttribLocation(program, "vCol");       // 顶点颜色属性位置
-
-    // 创建并设置顶点数组对象（VAO）
-    GLuint vertex_array;     // 声明VAO对象ID
-    glGenVertexArrays(1, &vertex_array);  // 生成一个VAO对象
-    glBindVertexArray(vertex_array);       // 绑定VAO对象
-
-    GLuint vertex_buffer;
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    
-    // 启用顶点属性数组并设置其格式
-    glEnableVertexAttribArray(vpos_location); // 启用位置属性数组
-    // 设置位置属性的格式和来源
-    glVertexAttribPointer(vpos_location,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(Vertex),
-                          reinterpret_cast<void *>(offsetof(Vertex, pos)));
-    
-    // 颜色属性设置
-    glEnableVertexAttribArray(vcol_location); // 启用颜色属性数组
-    // 设置颜色属性的格式和来源
-    glVertexAttribPointer(vcol_location,
-                          3,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(Vertex),
-                          reinterpret_cast<void *>(offsetof(Vertex, col)));
-
     // 主渲染循环 - 持续运行直到窗口被要求关闭
     while (!glfwWindowShouldClose(window)) {
-        // 获取帧缓冲区的尺寸，用于处理窗口大小变化和计算宽高比
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-
-        // 设置视口，告诉OpenGL如何将标准化设备坐标映射到屏幕像素
-        glViewport(0, 0, width, height);
-        
-        // 清除颜色缓冲区，为新的一帧做准备
-        glClear(GL_COLOR_BUFFER_BIT);
-        vertices.clear();
-
         // 处理事件队列中的所有事件（如键盘输入、鼠标移动等）
         glfwPollEvents();
 
+        vertices.clear();
         ui.update();
         ui.draw(vertices);
 
-        // 2️⃣ 上传到 GPU
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(
-            GL_ARRAY_BUFFER,
-            static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex)),
-            vertices.data(),
-            GL_DYNAMIC_DRAW
-        );
-
-        // 创建和设置变换矩阵
-        linmath::mat4x4 mvp;  // 模型、投影和最终的MVP矩阵
-
-        calc_ortho_mvp(mvp, width, height);
-
-        // 3️⃣ 设置变换 & 画
-        glUseProgram(program);
-        glUniformMatrix4fv(
-            mvp_location,
-            1,
-            GL_FALSE,
-            reinterpret_cast<const GLfloat*>(&mvp)
-        );
-
-        glBindVertexArray(vertex_array);
-        glDrawArrays(
-            GL_TRIANGLES,
-            0,
-            static_cast<GLsizei>(vertices.size())
-        );
+        renderer.begin_frame();
+        renderer.draw(vertices.data(), vertices.size());
+        renderer.end_frame();
 
         // 交换前后缓冲区，显示新绘制的帧
         glfwSwapBuffers(window);
