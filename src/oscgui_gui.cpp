@@ -20,7 +20,7 @@ struct oscgui_gui {
 /* =========================
    GUI 生命周期
    ========================= */
-
+/*
 oscgui_gui *oscgui_gui_create(void *native_window) {
     if (!native_window) return nullptr;
 
@@ -30,7 +30,7 @@ oscgui_gui *oscgui_gui_create(void *native_window) {
     );
     return g;
 }
-
+*/
 
 void oscgui_gui_destroy(const oscgui_gui *gui) {
     if (!gui) return;

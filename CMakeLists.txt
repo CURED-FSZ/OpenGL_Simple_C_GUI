@@ -41,6 +41,8 @@ add_library(oscgui STATIC
         include/oscgui/oscgui_types.h
         src/oscgui_components.cpp
         include/oscgui/oscgui_components.h
+        src/Text.cpp
+        src/Text.h
 )
 
 # 启用有用的编译警告（强烈建议）
@@ -81,6 +83,8 @@ add_executable(oscgui_exe EXCLUDE_FROM_ALL
         src/gui.h
         src/renderer.h
         src/renderer.cpp
+        src/Text.cpp
+        src/Text.h
 )
 
 # oscgui_exe 是“特权程序”，可以直接用 OpenGL / glad

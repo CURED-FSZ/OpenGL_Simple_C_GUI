@@ -22,39 +22,51 @@ struct vec4 {
 
 // 顶点
 struct Vertex {
-    vec2 pos; // 顶点的二维位置坐标
-    vec4 col; // 顶点的颜色值（RGB格式）
+    vec2 pos{}; // 顶点的二维位置坐标
+    vec4 col{}; // 顶点的颜色值（RGB格式）
+    vec2 uv{}; // 顶点的二维纹理坐标
 };
 
 // 颜色结构体
 struct Color {
-    float r, g, b, a;
+    float r{}, g{}, b{}, a{};
+    constexpr Color() = default;
+    constexpr Color(const float red, const float green, const float blue) {
+        r = red; g = green; b = blue; a = 1.0f;
+    }
+    constexpr Color(const float red, const float green, const float blue, const float alpha) {
+        r = red; g = green; b = blue; a = alpha;
+    }
+
+    constexpr void alpha(const float al) {
+        a = al;
+    }
 };
 
 namespace Colors {
-    constexpr Color red = {1.0f, 0.0f, 0.0f, 1.0f}; // 红
-    constexpr Color green = {0.0f, 1.0f, 0.0f, 1.0f}; // 绿
-    constexpr Color blue = {0.0f, 0.0f, 1.0f, 1.0f}; // 蓝
-    constexpr Color white = {1.0f, 1.0f, 1.0f, 1.0f}; // 白
-    constexpr Color black = {0.0f, 0.0f, 0.0f, 1.0f}; // 黑
-    constexpr Color yellow = {1.0f, 1.0f, 0.0f, 1.0f}; // 黄
-    constexpr Color purple = {1.0f, 0.0f, 1.0f, 1.0f}; // 紫
-    constexpr Color gray = {0.5f, 0.5f, 0.5f, 1.0f}; // 灰
-    constexpr Color light_gray = {0.8f, 0.8f, 0.8f, 1.0f}; // 浅灰
-    constexpr Color dark_gray = {0.2f, 0.2f, 0.2f, 1.0f}; // 深灰
-    constexpr Color orange = {1.0f, 0.5f, 0.0f, 1.0f}; // 橙
-    constexpr Color cyan = {0.0f, 1.0f, 1.0f, 1.0f}; // 青
-    constexpr Color magenta = {1.0f, 0.0f, 1.0f, 1.0f}; // 品红
-    constexpr Color brown = {0.6f, 0.3f, 0.0f, 1.0f}; // 棕
-    constexpr Color pink = {1.0f, 0.75f, 0.8f, 1.0f}; // 粉
-    constexpr Color lime = {0.0f, 1.0f, 0.0f, 1.0f}; // 酸橙
-    constexpr Color navy = {0.0f, 0.0f, 0.5f, 1.0f}; // 海军蓝
-    constexpr Color olive = {0.5f, 0.5f, 0.0f, 1.0f}; // 橄榄
-    constexpr Color teal = {0.0f, 0.5f, 0.5f, 1.0f}; // 水鸭色
-    constexpr Color maroon = {0.5f, 0.0f, 0.0f, 1.0f}; // 栗色
-    constexpr Color silver = {0.75f, 0.75f, 0.75f, 1.0f}; // 银
-    constexpr Color gold = {1.0f, 0.84f, 0.0f, 1.0f}; // 金
-    constexpr Color transparent = {0.0f, 0.0f, 0.0f, 0.0f}; // 透明
+    constexpr Color red = {1.0f, 0.0f, 0.0f}; // 红
+    constexpr Color green = {0.0f, 1.0f, 0.0f}; // 绿
+    constexpr Color blue = {0.0f, 0.0f, 1.0f}; // 蓝
+    constexpr Color white = {1.0f, 1.0f, 1.0f}; // 白
+    constexpr Color black = {0.0f, 0.0f, 0.0f}; // 黑
+    constexpr Color yellow = {1.0f, 1.0f, 0.0f}; // 黄
+    constexpr Color purple = {1.0f, 0.0f, 1.0f}; // 紫
+    constexpr Color gray = {0.5f, 0.5f, 0.5f}; // 灰
+    constexpr Color light_gray = {0.8f, 0.8f, 0.8f}; // 浅灰
+    constexpr Color dark_gray = {0.2f, 0.2f, 0.2f}; // 深灰
+    constexpr Color orange = {1.0f, 0.5f, 0.0f}; // 橙
+    constexpr Color cyan = {0.0f, 1.0f, 1.0f}; // 青
+    constexpr Color magenta = {1.0f, 0.0f, 1.0f}; // 品红
+    constexpr Color brown = {0.6f, 0.3f, 0.0f}; // 棕
+    constexpr Color pink = {1.0f, 0.75f, 0.8f}; // 粉
+    constexpr Color lime = {0.0f, 1.0f, 0.0f}; // 酸橙
+    constexpr Color navy = {0.0f, 0.0f, 0.5f}; // 海军蓝
+    constexpr Color olive = {0.5f, 0.5f, 0.0f}; // 橄榄
+    constexpr Color teal = {0.0f, 0.5f, 0.5f}; // 水鸭色
+    constexpr Color maroon = {0.5f, 0.0f, 0.0f}; // 栗色
+    constexpr Color silver = {0.75f, 0.75f, 0.75f}; // 银
+    constexpr Color gold = {1.0f, 0.84f, 0.0f}; // 金
+    constexpr Color transparent = {0.0f, 0.0f, 0.0f}; // 透明
 }
 
 namespace shapes {

@@ -3,10 +3,84 @@
 //
 #include "gui.h"
 
-namespace gui {
+#include "gl.h"
 
-    GUI::GUI(GLFWwindow* window)
-        : window_(window) {}
+namespace gui {
+    GUI::GUI(const int width, const int height, const char* title, void (*error_callback)(int error, const char* description)) {
+        // 初始化GLFW库
+        if (!glfwInit())
+            return;
+
+        // 设置GLFW的错误回调函数
+        glfwSetErrorCallback(error_callback);
+
+        // 配置GLFW，指定使用的OpenGL版本和配置
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        // 启用多重采样抗锯齿
+        glfwWindowHint(GLFW_SAMPLES, 4);
+
+        // 创建窗口前：告诉 GLFW，窗口先别显示
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+        printf("create window\n");
+        // 创建窗口
+        GLFWwindow* window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        if (!window) {
+            printf("failed create window!\n");
+            return;
+        }
+
+
+        // 获取主显示器
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        // 计算窗口居中位置
+        glfwSetWindowPos(
+            window,
+            (mode->width  - width) / 2,
+            (mode->height - height) / 2
+        );
+
+        // 固定窗口大小
+        glfwSetWindowSizeLimits(window, width, height, width, height);
+
+        // 设置当前OpenGL上下文
+        glfwMakeContextCurrent(window);
+
+        // 加载OpenGL函数指针（通过glad库）
+        gladLoadGL(glfwGetProcAddress);
+
+        // 启用垂直同步（V-Sync）
+        glfwSwapInterval(1);
+
+        // 显示窗口
+        glfwShowWindow(window);
+
+        window_ = window;
+    }
+
+    vec2 GUI::get_window_size() const {
+        int width, height;
+        glfwGetWindowSize(window_, &width, &height);
+        return vec2{static_cast<float>(width), static_cast<float>(height)};
+    }
+
+    GLFWwindow* GUI::get_window() const {
+        return window_;
+    }
+
+    void GUI::set_keyCallback(const GLFWkeyfun key_callback) const {
+        // 设置窗口的键盘按键回调函数
+        glfwSetKeyCallback(window_, key_callback);
+    }
+
+    void GUI::set_window_icon(const int count, const GLFWimage* image) const {
+        glfwSetWindowIcon(window_, count, image);
+    }
 
     void GUI::add(components::Component* comp) {
         components_.push_back(comp);
@@ -37,6 +111,18 @@ namespace gui {
                 c->draw(out);
             }
         }
+    }
+
+    bool GUI::should_render_loop() const {
+        return !glfwWindowShouldClose(window_);
+    }
+
+    void GUI::clear() const {
+        // 渲染循环结束后清理资源
+        glfwDestroyWindow(window_); // 销毁窗口
+
+        // 清理并关闭GLFW
+        glfwTerminate();
     }
 
 }

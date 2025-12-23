@@ -271,11 +271,11 @@ void* _glfw_calloc(size_t count, size_t size)
         return NULL;
 }
 
-void* _glfw_realloc(void* block, size_t size)
+void* _glfw_realloc(void* pointer, size_t size)
 {
-    if (block && size)
+    if (pointer && size)
     {
-        void* resized = _glfw.allocator.reallocate(block, size, _glfw.allocator.user);
+        void* resized = _glfw.allocator.reallocate(pointer, size, _glfw.allocator.user);
         if (resized)
             return resized;
         else
@@ -284,9 +284,9 @@ void* _glfw_realloc(void* block, size_t size)
             return NULL;
         }
     }
-    else if (block)
+    else if (pointer)
     {
-        _glfw_free(block);
+        _glfw_free(pointer);
         return NULL;
     }
     else

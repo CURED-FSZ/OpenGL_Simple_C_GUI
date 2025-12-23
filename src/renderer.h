@@ -5,15 +5,16 @@
 #ifndef OSCGUI_RENDERER_H
 #define OSCGUI_RENDERER_H
 #include "based.h"
+#include "gui.h"
 
 class Renderer {
 public:
     /**
      * 初始化渲染器
-     * @param width 视口宽度
-     * @param height 视口高度
+     * @param gui
+     * @param background 视口背景
      */
-    void init(int width, int height);
+    explicit Renderer(const gui::GUI &gui, Color background = Colors::black);
 
     /**
      * 初始化帧
@@ -30,7 +31,7 @@ public:
     /**
      * 帧结束
      */
-    void end_frame();
+    void end_frame() const;
 
 private:
     unsigned int program_ = 0;
@@ -40,6 +41,9 @@ private:
 
     int width_ = 0;
     int height_ = 0;
+
+    GLFWwindow* window_ = nullptr;
+    Color background_ = Colors::black;
 
     void create_program();
 };
