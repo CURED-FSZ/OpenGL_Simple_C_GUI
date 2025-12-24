@@ -546,7 +546,6 @@ void _glfwDetectJoystickConnectionWin32(void)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Failed to enumerate DirectInput8 devices");
-            return;
         }
     }
 }

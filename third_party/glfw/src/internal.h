@@ -520,7 +520,7 @@ struct _GLFWcontext
 //
 struct _GLFWwindow
 {
-    struct _GLFWwindow* next;
+    _GLFWwindow* next;
 
     // Window settings and state
     GLFWbool            resizable;

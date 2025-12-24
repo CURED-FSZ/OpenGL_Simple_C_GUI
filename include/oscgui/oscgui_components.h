@@ -8,7 +8,7 @@ extern "C" {
  * 创建按钮
  * @return 按钮指针
  */
-oscgui_button *oscgui_button_create(void);
+oscgui_button *oscgui_button_create(oscgui_vec2 pos, oscgui_vec2 sz);
 
 /**
  * 销毁按钮

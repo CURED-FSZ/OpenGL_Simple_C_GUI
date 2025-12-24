@@ -11,7 +11,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "based.h"
+#include "components.h"
+#include "types.h"
 
 namespace gui {
 
@@ -36,14 +37,14 @@ namespace gui {
          */
         void set_keyCallback(GLFWkeyfun key_callback) const;
 
-        void set_window_icon(int count, const GLFWimage* image) const;
+        void set_window_icon(const char* path) const;
 
         // 添加组件（GUI 不拥有生命周期，只管理）
         void add(components::Component* comp);
 
         // 每一帧调用
         void update();
-        void draw(std::vector<Vertex>& out) const;
+        void draw(std::vector<Vertex>& guiOut, std::vector<Vertex>& textOut) const;
 
         void clear() const;
 

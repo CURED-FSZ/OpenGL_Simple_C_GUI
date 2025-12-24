@@ -1476,7 +1476,9 @@ DECL_WINELIB_TYPE_AW(LPCDIDEVICEIMAGEINFOHEADER)
 #define INTERFACE IDirectInputEffect
 DECLARE_INTERFACE_(IDirectInputEffect,IUnknown)
 {
-    /*** IUnknown methods ***/
+	virtual ~IDirectInputEffect() = default;
+
+	/*** IUnknown methods ***/
     STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
     STDMETHOD_(ULONG,AddRef)(THIS) PURE;
     STDMETHOD_(ULONG,Release)(THIS) PURE;
@@ -1537,7 +1539,9 @@ DECLARE_INTERFACE_(IDirectInputEffect,IUnknown)
 #define INTERFACE IDirectInputDeviceA
 DECLARE_INTERFACE_(IDirectInputDeviceA,IUnknown)
 {
-    /*** IUnknown methods ***/
+	virtual ~IDirectInputDeviceA() = default;
+
+	/*** IUnknown methods ***/
     STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
     STDMETHOD_(ULONG,AddRef)(THIS) PURE;
     STDMETHOD_(ULONG,Release)(THIS) PURE;
@@ -1566,7 +1570,9 @@ DECLARE_INTERFACE_(IDirectInputDeviceA,IUnknown)
 #define INTERFACE IDirectInputDeviceW
 DECLARE_INTERFACE_(IDirectInputDeviceW,IUnknown)
 {
-    /*** IUnknown methods ***/
+	virtual ~IDirectInputDeviceW() = default;
+
+	/*** IUnknown methods ***/
     STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
     STDMETHOD_(ULONG,AddRef)(THIS) PURE;
     STDMETHOD_(ULONG,Release)(THIS) PURE;
@@ -2162,7 +2168,9 @@ extern const DIDATAFORMAT c_dfDIJoystick2;
 #define INTERFACE IDirectInputA
 DECLARE_INTERFACE_(IDirectInputA,IUnknown)
 {
-    /*** IUnknown methods ***/
+	virtual ~IDirectInputA() = default;
+
+	/*** IUnknown methods ***/
     STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
     STDMETHOD_(ULONG,AddRef)(THIS) PURE;
     STDMETHOD_(ULONG,Release)(THIS) PURE;
@@ -2181,10 +2189,12 @@ DECLARE_INTERFACE_(IDirectInputA,IUnknown)
 #define INTERFACE IDirectInputW
 DECLARE_INTERFACE_(IDirectInputW,IUnknown)
 {
-    /*** IUnknown methods ***/
+	virtual ~IDirectInputW() = default;
+
+	/*** IUnknown methods ***/
     STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)() PURE;
+    STDMETHOD_(ULONG,Release)() PURE;
     /*** IDirectInputW methods ***/
     STDMETHOD(CreateDevice)(THIS_ REFGUID rguid, LPDIRECTINPUTDEVICEW *lplpDirectInputDevice, LPUNKNOWN pUnkOuter) PURE;
     STDMETHOD(EnumDevices)(THIS_ DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags) PURE;

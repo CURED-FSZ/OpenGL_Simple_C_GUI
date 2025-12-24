@@ -3,7 +3,9 @@
 //
 
 #include <oscgui/oscgui_components.h>
-#include <based.h>
+#include <types.h>
+
+#include "components.h"
 
 /* =========================
    不透明结构体定义
@@ -28,9 +30,11 @@ oscgui_component* oscgui_as_component(const oscgui_button* btn) {
     return btn->as_component;
 }
 
-oscgui_button* oscgui_button_create() {
+oscgui_button* oscgui_button_create(const oscgui_vec2 pos, const oscgui_vec2 sz) {
     auto *b = new oscgui_button;
-    b -> impl = new components::Button;
+    const vec2 position = {pos.x, pos.y};
+    const vec2 size = {sz.x, sz.y};
+    b -> impl = new components::Button(position, size);
 
     b->as_component = new oscgui_component;
     b->as_component->impl = b->impl;

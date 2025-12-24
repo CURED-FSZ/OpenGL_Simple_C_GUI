@@ -313,7 +313,7 @@ static GLFWglproc getProcAddressEGL(const char* procname)
 
     if (window->context.egl.client)
     {
-        GLFWglproc proc = (GLFWglproc)
+        const GLFWglproc proc =
             _glfwPlatformGetModuleSymbol(window->context.egl.client, procname);
         if (proc)
             return proc;
@@ -396,7 +396,7 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
-    _glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
+    _glfw.egl.prefix = strncmp(sonames[i], "lib", 3) == 0;
 
     _glfw.egl.GetConfigAttrib = (PFN_eglGetConfigAttrib)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglGetConfigAttrib");

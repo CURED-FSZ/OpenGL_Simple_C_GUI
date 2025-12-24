@@ -15,6 +15,10 @@ typedef struct {
     float r, g, b, a;
 } oscgui_color;
 
+    typedef struct {
+        void* impl;
+    } oscgui_font;
+
 typedef void (*oscgui_click_cb)(oscgui_component *self);
 
 #ifdef __cplusplus

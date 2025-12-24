@@ -85,7 +85,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
 
     if (ctxconfig->client == GLFW_OPENGL_API)
     {
-        if ((ctxconfig->major < 1 || ctxconfig->minor < 0) ||
+        if (ctxconfig->major < 1 || ctxconfig->minor < 0 ||
             (ctxconfig->major == 1 && ctxconfig->minor > 5) ||
             (ctxconfig->major == 2 && ctxconfig->minor > 1) ||
             (ctxconfig->major == 3 && ctxconfig->minor > 3))
@@ -322,7 +322,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             closest = current;
         else if (missing == leastMissing)
         {
-            if ((colorDiff < leastColorDiff) ||
+            if (colorDiff < leastColorDiff ||
                 (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
             {
                 closest = current;

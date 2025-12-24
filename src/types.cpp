@@ -1,7 +1,7 @@
 //
 // Created by f1779 on 2025/12/18.
 //
-#include "based.h"
+#include "types.h"
 
 #include <cmath>
 
@@ -65,83 +65,5 @@ namespace shapes {
         out.push_back(v2);
         out.push_back(v1);
         out.push_back(v3);
-    }
-}
-
-namespace components {
-    void Component::update(const vec2& mouse_pos, const bool mouse_down){
-        // 上一帧状态
-        prev_state = state;
-
-        if (!enabled) {
-            state = ComponentState::Disabled;
-            return;
-        }
-
-        // 鼠标是否在组件内
-        if (!contains(mouse_pos)) {
-            state = ComponentState::Normal;
-            return;
-        }
-
-        // 鼠标按下
-        if (mouse_down) {
-            state = ComponentState::Pressed;
-        } else {
-            state = ComponentState::Hovered;
-        }
-
-        // click 条件：按下 → 松开，并且还在按钮里
-        if (prev_state == ComponentState::Pressed &&
-            state == ComponentState::Hovered) {
-            on_click();
-            }
-    }
-    // 鼠标是否在组件内
-    [[nodiscard]] bool Component::contains(const vec2& p) const{
-        return p.x >= position.x &&
-               p.y >= position.y &&
-               p.x <= position.x + size.x &&
-               p.y <= position.y + size.y;
-    }
-
-    // 点击事件
-    void Component::on_click() {
-        if (OnClick) {
-            OnClick(this);
-        }
-    }
-
-    // 按钮绘制
-    void Button::draw(std::vector<Vertex>& out) const {
-        if (!visible) return;
-
-        Color color{};
-        switch (state) {
-            case ComponentState::Hovered:
-                color = hover_color;
-                break;
-            case ComponentState::Pressed:
-                color = pressed_color;
-                break;
-            default:
-                color = normal_color;
-                break;
-        }
-
-        shapes::rectangle(
-            out,
-            position.x,
-            position.y,
-            size.x,
-            size.y,
-            color
-        );
-    }
-
-    // 按钮更新
-    void Button::update(const vec2& mouse_pos, const bool mouse_down) {
-        Component::update(mouse_pos, mouse_down);
-
     }
 }

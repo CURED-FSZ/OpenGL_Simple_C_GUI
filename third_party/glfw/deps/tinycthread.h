@@ -344,7 +344,7 @@ int thrd_create(thrd_t *thr, thrd_start_t func, void *arg);
 /** Identify the calling thread.
 * @return The identifier of the calling thread.
 */
-thrd_t thrd_current(void);
+thrd_t thrd_current();
 
 /** NOT YET IMPLEMENTED.
 */
@@ -389,7 +389,7 @@ int thrd_sleep(const struct timespec *time_point, struct timespec *remaining);
 * Permit other threads to run, even if the current thread would ordinarily
 * continue to run.
 */
-void thrd_yield(void);
+void thrd_yield();
 
 /* Thread local storage */
 #if defined(_TTHREAD_WIN32_)

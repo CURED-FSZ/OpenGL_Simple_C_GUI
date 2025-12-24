@@ -3,7 +3,9 @@
 //
 #include "gui.h"
 
-#include "gl.h"
+#include <glad/include/gl.h>
+
+#include <stb/stb_image.h>
 
 namespace gui {
     GUI::GUI(const int width, const int height, const char* title, void (*error_callback)(int error, const char* description)) {
@@ -78,8 +80,24 @@ namespace gui {
         glfwSetKeyCallback(window_, key_callback);
     }
 
-    void GUI::set_window_icon(const int count, const GLFWimage* image) const {
-        glfwSetWindowIcon(window_, count, image);
+    void GUI::set_window_icon(const char* path) const {
+        int w, h, channels;
+
+        // stb_image 默认是左上角为原点，GLFW 也是 OK 的
+        unsigned char* pixels = stbi_load(path, &w, &h, &channels, 4);
+        if (!pixels) {
+            printf("Failed to load icon: %s\n", path);
+            return;
+        }
+
+        GLFWimage image{};
+        image.width  = w;
+        image.height = h;
+        image.pixels = pixels;
+
+        glfwSetWindowIcon(window_, 1, &image);
+
+        stbi_image_free(pixels);
     }
 
     void GUI::add(components::Component* comp) {
@@ -96,6 +114,7 @@ namespace gui {
     }
 
     void GUI::update() {
+        glfwPollEvents();
         poll_input();
 
         for (auto* c : components_) {
@@ -105,11 +124,11 @@ namespace gui {
         }
     }
 
-    void GUI::draw(std::vector<Vertex>& out) const {
+    void GUI::draw(std::vector<Vertex>& guiOut, std::vector<Vertex>& textOut) const {
         for (const auto* c : components_) {
-            if (c->visible) {
-                c->draw(out);
-            }
+            if (!c->visible) continue;
+            c->drawGUI(guiOut);
+            c->drawText(textOut);
         }
     }
 
