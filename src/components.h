@@ -5,7 +5,6 @@
 #ifndef OSCGUI_COMPONENTS_H
 #define OSCGUI_COMPONENTS_H
 #include <string>
-
 #include "Text.h"
 #include "types.h"
 
