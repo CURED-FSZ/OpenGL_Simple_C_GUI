@@ -4,34 +4,13 @@
 #include "renderer.h"
 
 // OpenGL / GLFW
-#define GLAD_GL_IMPLEMENTATION
-#include <gl.h>
-#define GLFW_INCLUDE_NONE
+#include <glad/include/gl.h>
 #include <GLFW/glfw3.h>
-
 #include <fstream>
-#include <sstream>
-#include <stdexcept>
 
 #include "gui.h"
-#include "linmath.h"
-
-/**
- * @brief 获取文件内容
- *
- * 从给定的路径中读取文件内容，并返回一个字符串
- * @param path 文件路径
- * @return 文件内容字符串
- */
-std::string get_file_content(const char *path) {
-    const std::ifstream file(path);
-    if (!file)
-        throw std::runtime_error("failed to open file");
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
+#include <linmath/linmath.h>
+#include "types.h"
 
 Renderer::Renderer(const gui::GUI &gui, const Color background) {
     const auto [x, y] = gui.get_window_size();
@@ -87,16 +66,16 @@ Renderer::Renderer(const gui::GUI &gui, const Color background) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void Renderer::set_background(const Color color) {
+    background_ = color;
+}
+
 void Renderer::begin_frame() const {
     glViewport(0, 0, width_, height_);
     glClearColor(background_.r, background_.g, background_.b, background_.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(program_);
-
-    // 1. use_texture（先写死 false / true 都行）
-    const GLint useTexLoc = glGetUniformLocation(program_, "use_texture");
-    glUniform1i(useTexLoc, 0); // 现在你的 GUI 还没用纹理，先关掉
 
     // 2. sampler2D 绑定到 0 号纹理单元
     const GLint samplerLoc = glGetUniformLocation(program_, "tex_sampler");
@@ -121,6 +100,31 @@ void Renderer::begin_frame() const {
         1,
         GL_FALSE,
         reinterpret_cast<float *>(mvp));
+
+    GLint linked = 0;
+    glGetProgramiv(program_, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        GLint len = 0; glGetProgramiv(program_, GL_INFO_LOG_LENGTH, &len);
+        std::string log(len, '\0');
+        glGetProgramInfoLog(program_, len, nullptr, log.data());
+        printf("Program link failed:\n%s\n", log.c_str());
+    }
+}
+
+void Renderer::beginText(const unsigned int tex) const {
+    glUseProgram(program_);
+
+    glUniform1i(glGetUniformLocation(program_, "use_texture"), 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glUniform1i(glGetUniformLocation(program_, "tex_sampler"), 0);
+}
+
+void Renderer::beginGui() const {
+    glUseProgram(program_);
+    glUniform1i(glGetUniformLocation(program_, "use_texture"), 0);
 }
 
 void Renderer::draw(const Vertex *vertices, const std::size_t count) const {

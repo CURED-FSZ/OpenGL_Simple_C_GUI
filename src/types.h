@@ -5,7 +5,6 @@
 #ifndef OPENGL_C_GUI_BASED_H
 #define OPENGL_C_GUI_BASED_H
 
-#include <string>
 #include <vector>
 
 struct vec2 {
@@ -43,7 +42,7 @@ struct Color {
     }
 };
 
-namespace Colors {
+namespace colors {
     constexpr Color red = {1.0f, 0.0f, 0.0f}; // 红
     constexpr Color green = {0.0f, 1.0f, 0.0f}; // 绿
     constexpr Color blue = {0.0f, 0.0f, 1.0f}; // 蓝
@@ -100,79 +99,6 @@ namespace shapes {
      * @param color 线的颜色
      */
     void line(std::vector<Vertex> &out, vec2 point_one, vec2 point_two, float thickness, Color color);
-}
-
-namespace components {
-
-    // 组件状态
-    enum class ComponentState {
-        Normal, // 默认
-        Hovered, // 鼠标在上面（你叫 enter）
-        Pressed, // 鼠标按下
-        Disabled // 可选，后期再加
-    };
-
-    // 组件基类
-    class Component {
-    public:
-        virtual ~Component() = default;
-
-        std::string id;
-
-        // ===== 几何属性 =====
-        vec2 position{}; // 左上角
-        vec2 size{}; // 宽高
-
-        // ===== 状态 =====
-        ComponentState state = ComponentState::Normal;
-
-        // ===== 可见性 / 可用性 =====
-        bool visible = true;
-        bool enabled = true;
-
-        // ===== 点击事件 =====
-        void (* OnClick)(Component* self) = nullptr;
-        void* c_handle = nullptr;   // C bridge 用
-
-        // ===== 核心接口 =====
-        /**
-         * 绘制组件
-         * @param out 输出的顶点数据
-         */
-        virtual void draw(std::vector<Vertex> &out) const = 0;
-
-        /**
-         * 更新组件状态
-         * @param mouse_pos 鼠标位置
-         * @param mouse_down 鼠标是否按下
-         */
-        virtual void update(const vec2 &mouse_pos, bool mouse_down) = 0;
-
-    protected:
-        // 点是否在组件内（核心工具函数）
-        [[nodiscard]] bool contains(const vec2 &p) const;
-
-        // 上一帧状态
-        ComponentState prev_state = ComponentState::Normal;
-
-        // 点击事件
-        virtual void on_click();
-    };
-
-    // 按钮
-    class Button : public Component {
-    public:
-        // 按钮颜色
-        Color normal_color = Colors::light_gray;
-        // 按钮颜色（鼠标悬停时）
-        Color hover_color = Colors::gray;
-        // 按钮颜色（鼠标按下时）
-        Color pressed_color = Colors::dark_gray;
-
-        void draw(std::vector<Vertex> &out) const override;
-
-        void update(const vec2 &mouse_pos, bool mouse_down) override;
-    };
 }
 
 #endif //OPENGL_C_GUI_BASED_H

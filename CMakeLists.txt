@@ -32,7 +32,7 @@ add_subdirectory(third_party/glfw)
 # =========================
 
 add_library(oscgui STATIC
-        src/based.cpp
+        src/types.cpp
         src/gui.cpp
 
         third_party/glad/src/gl.c
@@ -43,6 +43,11 @@ add_library(oscgui STATIC
         include/oscgui/oscgui_components.h
         src/Text.cpp
         src/Text.h
+        src/components.cpp
+        src/components.h
+        include/oscgui/text.h
+        src/app.cpp
+        src/app.h
 )
 
 # 启用有用的编译警告（强烈建议）
@@ -62,6 +67,7 @@ target_include_directories(oscgui
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/include
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/linmath
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
 )
 
 # 平台相关的 OpenGL 链接
@@ -85,6 +91,8 @@ add_executable(oscgui_exe EXCLUDE_FROM_ALL
         src/renderer.cpp
         src/Text.cpp
         src/Text.h
+        src/app.cpp
+        src/app.h
 )
 
 # oscgui_exe 是“特权程序”，可以直接用 OpenGL / glad
@@ -97,8 +105,8 @@ target_link_libraries(oscgui_exe
 
 target_include_directories(oscgui_exe
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/linmath
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
 )
 
 # =========================
@@ -127,6 +135,20 @@ add_custom_command(TARGET oscgui_demo POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/shader
         $<TARGET_FILE_DIR:oscgui_demo>/shader
+        COMMENT "Copying shaders for oscgui_demo"
+)
+
+add_custom_command(TARGET oscgui_exe POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/font
+        $<TARGET_FILE_DIR:oscgui_exe>/font
+        COMMENT "Copying shaders for oscgui_exe"
+)
+
+add_custom_command(TARGET oscgui_demo POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/font
+        $<TARGET_FILE_DIR:oscgui_demo>/font
         COMMENT "Copying shaders for oscgui_demo"
 )
 

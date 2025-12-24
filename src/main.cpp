@@ -1,10 +1,6 @@
-// C / C++ Standard Library
 #include <iostream>
 
-// Project Internal
-#include "based.h"
-#include "gui.h"
-#include "renderer.h"
+#include "app.h"
 
 /**
  * @brief 键盘按键回调函数
@@ -41,73 +37,44 @@ static void error_callback(const int error, const char* description)
     fprintf(stderr, "Error[%d]: %s\n", error, description);
 }
 
-components::Button btn;
-components::Button btn2;
+App app(800, 600, "Hello OpenGL", error_callback, key_callback);
 
-void click(components::Component* e) {
-    std::cout << "click" << std::endl;
+components::Button btn({100.f, 100.f}, {200.f, 80.f});
+components::Button btn2({300.f, 300.f}, {200.f, 80.f});
+
+void click([[maybe_unused]] components::Component* e) {
+    btn2.set_text("I be clicked!");
 }
 
-void click2(components::Component* e) {
-    btn.normal_color = Colors::purple;
+void click2([[maybe_unused]] components::Component* e) {
+    btn.normal_color = colors::purple;
+    dynamic_cast<components::Button*>(e)->set_text("");
 }
 
-void init_gui() {
-    btn.position = {300.f, 300.f};
-    btn.size = {100.f, 50.f};
-    btn.normal_color = Colors::white;
-    btn.hover_color = Colors::red;
-    btn.pressed_color = Colors::blue;
+void init_gui(gui::GUI& ui, text::Font& font) {
+    btn.normal_color = colors::teal;
+    btn.hover_color = colors::red;
+    btn.pressed_color = colors::blue;
+    btn.text_color = colors::white;
     btn.OnClick = click;
+    btn.set_font(&font);
+    btn.set_text("Click me!");
 
-    btn2.position = {400.f, 300.f};
-    btn2.size = {100.f, 50.f};
-    btn2.normal_color = Colors::white;
-    btn2.hover_color = Colors::red;
-    btn2.pressed_color = Colors::blue;
+    btn2.normal_color = colors::lime;
+    btn2.hover_color = colors::red;
+    btn2.pressed_color = colors::blue;
+    btn2.text_color = colors::magenta;
     btn2.OnClick = click2;
+    btn2.set_font(&font);
+
+    ui.add(&btn);
+    ui.add(&btn2);
 }
 
 int main() {
-    std::vector<Vertex> vertices;
-    vertices.reserve(1024);
+    app.set_gui(init_gui);
 
-    init_gui();
-
-    gui::GUI ui(800, 600, "Hello OpenGL", error_callback);
-    ui.add(&btn);
-    ui.add(&btn2);
-
-    // 创建图标
-    GLFWimage image{};
-    static unsigned char pixels[32 * 32 * 4];
-    image.width = 32;
-    image.height = 32;
-    image.pixels = pixels;
-
-    const Renderer renderer(ui);
-
-    // 设置窗口的键盘按键回调函数
-    ui.set_keyCallback(key_callback);
-
-    // 设置窗口图标
-    ui.set_window_icon(1, &image);
-
-    // 主渲染循环 - 持续运行直到窗口被要求关闭
-    while (ui.should_render_loop()) {
-        // 处理事件队列中的所有事件（如键盘输入、鼠标移动等）
-        glfwPollEvents();
-
-        vertices.clear();
-        ui.update();
-        ui.draw(vertices);
-
-        renderer.begin_frame();
-        renderer.draw(vertices.data(), vertices.size());
-        renderer.end_frame();
-    }
-
-    ui.clear();
+    app.run();
 
     // 正常退出程序
     exit(EXIT_SUCCESS);
