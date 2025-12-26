@@ -49,20 +49,26 @@ void App::run() {
     }
 
     while (gui_.should_render_loop()) {
+        // 清空缓存
         guiVertices_.clear();
         textVertices_.clear();
 
+        // 更新 GUI
         gui_.update();
         gui_.draw(guiVertices_, textVertices_);
 
+        // 初始化帧
         renderer_.begin_frame();
 
+        // 绘制 GUI
         renderer_.beginGui();
         renderer_.draw(guiVertices_.data(), guiVertices_.size());
 
+        // 绘制文字
         renderer_.beginText(font_.texture());
         renderer_.draw(textVertices_.data(), textVertices_.size());
 
+        // 结束帧
         renderer_.end_frame();
     }
 }

@@ -368,7 +368,7 @@ RECENT REVISION HISTORY:
 //    very big.
 
 #ifndef STBI_NO_STDIO
-#include <cstdio>
+#include <stdio.h>
 #endif // STBI_NO_STDIO
 
 #define STBI_VERSION 1
@@ -383,7 +383,7 @@ enum
    STBI_rgb_alpha  = 4
 };
 
-#include <cstdlib>
+#include <stdlib.h>
 typedef unsigned char stbi_uc;
 typedef unsigned short stbi_us;
 
@@ -762,6 +762,7 @@ static int stbi__sse2_available(void)
 #define STBI_SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
 
 #if !defined(STBI_NO_JPEG) && defined(STBI_SSE2)
+static int stbi__sse2_available(void)
 {
    // If we're even attempting to compile this on GCC/Clang, that means
    // -msse2 is on, which means the compiler is allowed to use SSE2
@@ -968,6 +969,7 @@ STBI_THREAD_LOCAL
 #endif
 const char *stbi__g_failure_reason;
 
+STBIDEF const char *stbi_failure_reason(void)
 {
    return stbi__g_failure_reason;
 }

@@ -100,13 +100,6 @@ namespace components {
         Color text_color = colors::black;
 
         /**
-         * @brief 设置按钮字体
-         *
-         * @param font 按钮字体
-         */
-        void set_font(text::Font *font);
-
-        /**
          * @brief 绘制按钮
          *
          * 绘制按钮的图形和文字
@@ -132,6 +125,13 @@ namespace components {
         void update(const vec2 &mouse_pos, bool mouse_down) override;
 
         /**
+         * @brief 设置按钮字体
+         *
+         * @param font 按钮字体
+         */
+        void set_font(text::Font *font);
+
+        /**
          * 设置按钮文字
          * @param text 按钮文字
          */
@@ -139,6 +139,95 @@ namespace components {
 
     private:
         text::Text *text_ = nullptr;
+    };
+
+    class Label : public Component {
+    public:
+        Label(const vec2 pos, const vec2 sz) {
+            position = pos;
+            size = sz;
+        }
+
+        // 标签文字颜色
+        Color text_color = colors::black;
+
+        /**
+         * @brief 设置标签字体
+         *
+         * @param font 标签字体
+         */
+        void set_font(text::Font *font);
+
+        void drawGUI(std::vector<Vertex> &guiOut) const override;
+
+        void update(const vec2 &mouse_pos, bool mouse_down) override;
+
+        /**
+         * @brief 绘制标签文字
+         *
+         * 绘制标签的文字
+         * @param textOut 输出缓冲区
+         */
+        void drawText(std::vector<Vertex> &textOut) const override;
+
+        /**
+         * 设置标签文字
+         * @param text 标签文字
+         */
+        void set_text(const std::string &text) const;
+    private:
+        text::Text *text_ = nullptr;
+    };
+
+    class CheckBox : public Component {
+    public:
+        CheckBox(const vec2 pos, const vec2 sz) {
+            position = pos;
+            size = sz;
+        }
+
+        // 选框文字颜色
+        Color text_color = colors::black;
+
+        bool is_checked = false;
+
+        /**
+         * 绘制 GUI
+         * @param guiOut 输出缓冲区
+         */
+        void drawGUI(std::vector<Vertex> &guiOut) const override;
+
+        /**
+         * 绘制文字
+         * @param textOut 输出缓冲区
+         */
+        void drawText(std::vector<Vertex> &textOut) const override;
+
+        /**
+         * 更新组件状态
+         * @param mouse_pos 鼠标位置
+         * @param mouse_down 鼠标是否按下
+         */
+        void update(const vec2 &mouse_pos, bool mouse_down) override;
+
+        /**
+         * @brief 设置选框字体
+         *
+         * @param font 选框字体
+         */
+        void set_font(text::Font *font);
+
+        /**
+         * 设置选框文字
+         * @param text 选框文字
+         */
+        void set_text(const std::string &text) const;
+
+        void on_click() override;
+
+    private:
+        text::Text *text_ = nullptr;
+
     };
 }
 
