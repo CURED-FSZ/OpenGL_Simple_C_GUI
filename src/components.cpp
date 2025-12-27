@@ -6,9 +6,10 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdexcept>
 
+#include "gl.h"
 #include "gui.h"
+#include "stb/stb_image.h"
 
 void general_text_draw(std::vector<Vertex> &textOut, text::Text *text_, const vec2& position, const vec2& size, const Color& text_color) {
     if (!text_) return;
@@ -26,10 +27,7 @@ void general_text_draw(std::vector<Vertex> &textOut, text::Text *text_, const ve
     // 缩放
     const float scaleX = availW / width;
     const float scaleY = availH / height;
-    float scale  = std::min(scaleX, scaleY);
-
-    // 缩小到最大值
-    scale = std::min(scale, 1.5f);
+    const float scale  = std::min(scaleX, scaleY);
 
     // 设置文本属性
     text_->setScale(scale);
@@ -86,7 +84,7 @@ namespace components {
 
     void Component::on_click() {
         if (OnClick) {
-            OnClick(this);
+            OnClick();
         }
     }
 
@@ -187,10 +185,7 @@ namespace components {
         // 缩放
         const float scaleX = availW / width;
         const float scaleY = availH / height;
-        float scale  = std::min(scaleX, scaleY);
-
-        // 缩小到最大值
-        scale = std::min(scale, 1.5f);
+        const float scale  = std::min(scaleX, scaleY);
 
         // 设置文本属性
         text_->setScale(scale);
@@ -232,7 +227,7 @@ namespace components {
 std::string get_file_content(const char *path) {
     const std::ifstream file(path);
     if (!file)
-        throw std::runtime_error("failed to open file");
+        perror("failed to open file");
 
     std::stringstream buffer;
     buffer << file.rdbuf();

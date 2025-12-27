@@ -6,7 +6,7 @@ project(oscgui
 )
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install" CACHE PATH "" FORCE)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/" CACHE PATH "" FORCE)
 endif()
 
 # =========================
@@ -32,22 +32,36 @@ add_subdirectory(third_party/glfw)
 # =========================
 
 add_library(oscgui STATIC
+        # 核心类型文件
         src/types.cpp
-        src/gui.cpp
+        include/oscgui_types.h
+        src/extern/oscgui_types.cpp
 
-        third_party/glad/src/gl.c
-        src/oscgui_gui.cpp
-        include/oscgui/oscgui_gui.h
-        include/oscgui/oscgui_types.h
-        src/oscgui_components.cpp
-        include/oscgui/oscgui_components.h
+        # GUI 相关文件
+        src/gui.cpp
+        include/oscgui_gui.h
+        src/extern/oscgui_gui.cpp
+
+        # 组件相关文件
+        src/components.cpp
+        include/oscgui_components.h
+        src/extern/oscgui_components.cpp
+
+        # 应用相关文件
+        src/app.cpp
+        include/oscgui_app.h
+        src/extern/oscgui_app.cpp
+
+        # 文本处理文件
         src/Text.cpp
         src/Text.h
-        src/components.cpp
-        src/components.h
-        include/oscgui/text.h
-        src/app.cpp
-        src/app.h
+
+        # 渲染器相关文件
+        src/renderer.cpp
+        src/renderer.h
+
+        # 第三方库文件
+        third_party/glad/src/gl.c
 )
 
 # 启用有用的编译警告（强烈建议）
@@ -73,8 +87,9 @@ target_include_directories(oscgui
 # 平台相关的 OpenGL 链接
 if(WIN32)
     target_link_libraries(oscgui
-            PUBLIC glfw
-            PRIVATE opengl32
+            PRIVATE
+            glfw
+            opengl32
     )
 else()
     find_package(OpenGL REQUIRED)
@@ -109,15 +124,20 @@ target_include_directories(oscgui_exe
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party
 )
 
-# =========================
-# oscgui_demo（纯 C，用户视角测试）
-# =========================
+# demo
 add_executable(oscgui_demo EXCLUDE_FROM_ALL
         examples/demo.c
 )
 
+target_include_directories(oscgui_demo PRIVATE
+        ${CMAKE_INSTALL_PREFIX}/include
+)
+
+target_link_directories(oscgui_demo PRIVATE
+        ${CMAKE_INSTALL_PREFIX}/lib
+)
+
 target_link_libraries(oscgui_demo
-        PRIVATE
         oscgui
 )
 
@@ -126,35 +146,24 @@ target_link_libraries(oscgui_demo
 # =========================
 add_custom_command(TARGET oscgui_exe POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/shader
-        $<TARGET_FILE_DIR:oscgui_exe>/shader
-        COMMENT "Copying shaders for oscgui_exe"
-)
-
-add_custom_command(TARGET oscgui_demo POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/shader
-        $<TARGET_FILE_DIR:oscgui_demo>/shader
-        COMMENT "Copying shaders for oscgui_demo"
+        ${CMAKE_SOURCE_DIR}/img
+        $<TARGET_FILE_DIR:oscgui_exe>/img
+        COMMENT "Copying img for oscgui_exe"
 )
 
 add_custom_command(TARGET oscgui_exe POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/font
         $<TARGET_FILE_DIR:oscgui_exe>/font
-        COMMENT "Copying shaders for oscgui_exe"
-)
-
-add_custom_command(TARGET oscgui_demo POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/font
-        $<TARGET_FILE_DIR:oscgui_demo>/font
-        COMMENT "Copying shaders for oscgui_demo"
+        COMMENT "Copying fonts for oscgui_exe"
 )
 
 # =========================
 # 安装配置（发布包）
 # =========================
+
+find_package(Threads REQUIRED)
+target_link_libraries(oscgui PRIVATE Threads::Threads)
 
 install(
         TARGETS oscgui
@@ -163,7 +172,64 @@ install(
 
 install(
         DIRECTORY
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/oscgui
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
         DESTINATION
-        include
+        /
+)
+
+install(
+        DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/font
+        DESTINATION
+        /
+)
+
+install(
+        DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/img
+        DESTINATION
+        /
+)
+
+install(TARGETS oscgui
+        EXPORT oscguiTargets
+        ARCHIVE DESTINATION lib
+)
+
+install(EXPORT oscguiTargets
+        FILE oscguiTargets.cmake
+        NAMESPACE oscgui::
+        DESTINATION lib/cmake/oscgui
+)
+
+
+install(TARGETS glfw
+        EXPORT oscguiTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
+
+# =========================
+# 库配置
+# =========================
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/oscguiConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/oscguiConfig.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/oscguiConfig.cmake"
+        INSTALL_DESTINATION lib/cmake/oscgui
+)
+
+install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/oscguiConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/oscguiConfigVersion.cmake"
+        DESTINATION lib/cmake/oscgui
 )

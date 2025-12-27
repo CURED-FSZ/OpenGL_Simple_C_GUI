@@ -12,6 +12,42 @@
 #include <linmath/linmath.h>
 #include "types.h"
 
+const char* vertex_shader_text = R"(#version 460
+uniform mat4 MVP;
+
+layout(location = 0) in vec2 vPos;
+layout(location = 1) in vec4 vCol;
+layout(location = 2) in vec2 vTex;
+
+out vec4 color;
+out vec2 tex;
+
+void main() {
+    gl_Position = MVP * vec4(vPos, 0.0, 1.0);
+    color = vCol;
+    tex = vTex;
+})";
+const char* fragment_shader_text = R"(#version 460
+
+in vec4 color;
+in vec2 tex;
+
+uniform sampler2D tex_sampler;
+uniform bool use_texture;
+
+out vec4 fragment;
+
+void main() {
+    if(use_texture){
+        vec4 tex_color = texture(tex_sampler, tex);
+        fragment = vec4(color.rgb, color.a * tex_color.a);
+    }
+    else {
+        fragment = color;
+    }
+})";
+
+
 Renderer::Renderer(const gui::GUI &gui, const Color background) {
     const auto [x, y] = gui.get_window_size();
     width_ = static_cast<int>(x);
@@ -127,6 +163,15 @@ void Renderer::beginGui() const {
     glUniform1i(glGetUniformLocation(program_, "use_texture"), 0);
 }
 
+void Renderer::beginGuiTextured(const unsigned int tex) const {
+    glUseProgram(program_);
+    glUniform1i(glGetUniformLocation(program_, "use_texture"), 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glUniform1i(glGetUniformLocation(program_, "tex_sampler"), 0);
+}
+
 void Renderer::draw(const Vertex *vertices, const std::size_t count) const {
     if (count == 0) return;
 
@@ -152,12 +197,6 @@ void Renderer::end_frame() const {
 }
 
 void Renderer::create_program() {
-    const std::string vert = get_file_content("shader/vert.vert");
-    const std::string frag = get_file_content("shader/frag.frag");
-    // 读取顶点着色器文件内容到字符串
-    const char *vertex_shader_text = vert.c_str();
-    const char *fragment_shader_text = frag.c_str();
-
     auto compile = [](const GLenum type, const char *src) {
         const GLuint s = glCreateShader(type);
         glShaderSource(s, 1, &src, nullptr);

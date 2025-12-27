@@ -33,6 +33,12 @@ public:
     void beginGui() const;
 
     /**
+     * 绑定GUI纹理
+     * @param tex
+     */
+    void beginGuiTextured(unsigned int tex) const;
+
+    /**
      * 绘制帧
      * @param vertices 顶点集合
      * @param count 顶点数量

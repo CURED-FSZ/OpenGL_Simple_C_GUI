@@ -8,13 +8,10 @@
 #include <stb/stb_image.h>
 
 namespace gui {
-    GUI::GUI(const int width, const int height, const char* title, void (*error_callback)(int error, const char* description)) {
+    GUI::GUI(const int width, const int height, const char* title) {
         // 初始化GLFW库
         if (!glfwInit())
             return;
-
-        // 设置GLFW的错误回调函数
-        glfwSetErrorCallback(error_callback);
 
         // 配置GLFW，指定使用的OpenGL版本和配置
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -75,25 +72,30 @@ namespace gui {
         return window_;
     }
 
-    void GUI::set_keyCallback(const GLFWkeyfun key_callback) const {
-        // 设置窗口的键盘按键回调函数
-        glfwSetKeyCallback(window_, key_callback);
-    }
-
     void GUI::set_window_icon(const char* path) const {
         int w, h, channels;
-
-        // stb_image 默认是左上角为原点，GLFW 也是 OK 的
         unsigned char* pixels = stbi_load(path, &w, &h, &channels, 4);
         if (!pixels) {
             printf("Failed to load icon: %s\n", path);
             return;
         }
 
+        // 垂直翻转像素
+        const int stride = w * 4;
+        std::vector<unsigned char> flipped(h * stride);
+
+        for (int y = 0; y < h; ++y) {
+            memcpy(
+                flipped.data() + y * stride,
+                pixels + (h - 1 - y) * stride,
+                stride
+            );
+        }
+
         GLFWimage image{};
         image.width  = w;
         image.height = h;
-        image.pixels = pixels;
+        image.pixels = flipped.data();
 
         glfwSetWindowIcon(window_, 1, &image);
 

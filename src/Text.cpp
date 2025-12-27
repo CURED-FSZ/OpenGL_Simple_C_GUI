@@ -223,7 +223,7 @@ text::TextMetrics text::Text::measure() const {
     float maxWidth = 0.0f;
     float totalHeight = font_->lineHeight();
 
-    for (char c : text_) {
+    for (const char c : text_) {
         if (c == '\n') {
             maxWidth = std::max(maxWidth, lineWidth);
             lineWidth = 0.0f;

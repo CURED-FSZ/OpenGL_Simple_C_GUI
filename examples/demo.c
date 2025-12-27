@@ -2,40 +2,43 @@
 // Created by 冯帅真 on 2025/12/20.
 //
 #include <stdio.h>
-#include <oscgui/oscgui.h>
+#include <oscgui_app.h>
+#include <oscgui_types.h>
+#include <oscgui_components.h>
+#include <oscgui_gui.h>
 
-void click(oscgui_component* e) {
+oscgui_app *app;
+oscgui_button *btn1;
+oscgui_button *btn2;
+oscgui_label *label;
+oscgui_checkbox *checkbox;
+
+void click() {
     printf("Clicked!\n");
 }
 
-int main(void) {
-    oscgui_gui* gui = oscgui_create();
-
-    oscgui_button* btn = oscgui_button_create();
-    oscgui_button_set_position(btn, 10, 10);
-    oscgui_button_set_size(btn, 100, 50);
-    oscgui_button_set_color(
-        btn,
-        (oscgui_color){1, 0, 0, 1},
-        (oscgui_color){0, 1, 0, 1},
-        (oscgui_color){0, 0, 1, 1}
+void init_gui(oscgui_gui *gui, const oscgui_font *font) {
+    btn1 = oscgui_button_create(10, 10, 100, 50);
+    oscgui_button_set_color(btn1,
+                            (oscgui_color){0.5f, 0.5f, 0.7f, 1.0f},
+                            (oscgui_color){0.2f, 0.3f, 0.4f, 1.0f},
+                            (oscgui_color){0.5f, 0.9f, 0.7f, 1.0f}
     );
-    oscgui_button_set_on_click(btn, click);
+    oscgui_button_set_on_click(btn1, click);
+    oscgui_button_set_font(btn1, font);
+    oscgui_button_set_text(btn1, "Click me!");
 
-    oscgui_gui_add(gui, oscgui_as_component(btn));
+    oscgui_gui_add(gui, oscgui_button_as_component(btn1));
+}
 
-    /* ===== 主循环（由用户驱动）===== */
-    while (1) {
-        const oscgui_vec2 mouse = get_mouse_position();   // 用户自己实现
-        const int mouse_down = is_mouse_down();            // 用户自己实现
+int main(void) {
+    app = oscgui_app_create(800, 600, "Hello OpenGL");
 
-        oscgui_update(gui, mouse, mouse_down);
-        oscgui_draw(gui);
+    oscgui_app_set_window_background(app, (oscgui_color){0.f, 0.f, 0.f});
 
-        /* swap buffers / sleep / etc */
-    }
+    oscgui_app_set_init_gui(app, init_gui);
 
-    oscgui_button_destroy(btn);
-    oscgui_destroy(gui);
+    oscgui_app_run(app);
+
     return 0;
 }

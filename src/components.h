@@ -36,9 +36,7 @@ namespace components {
         bool enabled = true;
 
         // ===== 点击事件 =====
-        void (*OnClick)(Component *self) = nullptr;
-
-        void *c_handle = nullptr; // C bridge 用
+        void (*OnClick)() = nullptr;
 
         // ===== 核心接口 =====
 
@@ -241,3 +239,4 @@ namespace components {
 std::string get_file_content(const char *path);
 
 #endif //OSCGUI_COMPONENTS_H
+

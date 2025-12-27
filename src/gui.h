@@ -23,19 +23,12 @@ namespace gui {
          * @param width 窗口宽度
          * @param height 窗口高度
          * @param title 窗口标题
-         * @param error_callback 错误回调
          */
-        explicit GUI(int width, int height, const char* title, void (*error_callback)(int, const char*));
+        explicit GUI(int width, int height, const char* title);
 
         [[nodiscard]] vec2 get_window_size() const;
 
         [[nodiscard]] GLFWwindow* get_window() const;
-
-        /**
-         * 设置窗口键盘回调
-         * @param key_callback 键盘回调
-         */
-        void set_keyCallback(GLFWkeyfun key_callback) const;
 
         void set_window_icon(const char* path) const;
 

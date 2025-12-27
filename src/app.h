@@ -6,12 +6,11 @@
 #define OSCGUI_APP_H
 #include "gui.h"
 #include "renderer.h"
+#include <functional>
 
 class App {
 public:
-    App(int w, int h, const char* title,
-        void (*error_callback)(int, const char*),
-        void (*key_callback)(GLFWwindow*, int, int, int, int));
+    App(int w, int h, const char* title);
 
     ~App() =  default;
 
@@ -43,7 +42,9 @@ public:
      * @brief 设置GUI初始化函数
      * @param init_gui GUI初始化函数
      */
-    void set_gui(void (*init_gui)(gui::GUI& ui, text::Font& font));
+    void set_gui(const std::function<void(gui::GUI*, text::Font*)> &init_gui);
+
+    void *c_handle = nullptr; // C bridge 用的初始化函数句柄
 
     /**
      * @brief 运行程序
@@ -54,7 +55,7 @@ private:
     gui::GUI gui_;
     Renderer renderer_;
 
-    void (*init_gui_)(gui::GUI& ui, text::Font& font) = nullptr;
+    std::function<void(gui::GUI*, text::Font*)> init_gui_;
 
     std::vector<Vertex> guiVertices_;
     std::vector<Vertex> textVertices_;

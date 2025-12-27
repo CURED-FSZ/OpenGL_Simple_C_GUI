@@ -4,16 +4,12 @@
 
 #include "app.h"
 
-App::App(const int w, const int h, const char *title,
-         void (*error_callback)(int, const char *),
-         void (*key_callback)(GLFWwindow *, int, int, int, int))
-    : gui_(w, h, title, error_callback),
+App::App(const int w, const int h, const char *title)
+    : gui_(w, h, title),
       renderer_(gui_),
-      font_("font/fon.fnt",
-            "font/fon.png")
+      font_("font/font.fnt",
+            "font/font.png")
 {
-    gui_.set_keyCallback(key_callback);
-
     renderer_.set_background(colors::white);
 
     guiVertices_.reserve(1024);
@@ -36,16 +32,15 @@ void App::set_window_icon(const char* path) const {
     gui_.set_window_icon(path);
 }
 
-void App::set_gui(void (*init_gui)(gui::GUI& ui, text::Font& font)) {
+void App::set_gui(const std::function<void(gui::GUI*, text::Font*)> &init_gui) {
     init_gui_ = init_gui;
 }
 
 void App::run() {
     if (init_gui_)
-        init_gui_(gui_, font_);
+        init_gui_(&gui_, &font_);
     else {
         perror("none init gui!");
-        return;
     }
 
     while (gui_.should_render_loop()) {
