@@ -9,7 +9,7 @@
 // OpenGL / GLFW
 #define GLAD_GL_IMPLEMENTATION
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <../third_party/glfw/include/GLFW/glfw3.h>
 
 #include "components.h"
 #include "types.h"

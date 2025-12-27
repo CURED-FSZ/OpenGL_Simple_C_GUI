@@ -4,12 +4,12 @@
 #include "renderer.h"
 
 // OpenGL / GLFW
-#include <glad/include/gl.h>
-#include <GLFW/glfw3.h>
+#include <../third_party/glad/include/gl.h>
+#include <../third_party/glfw/include/GLFW/glfw3.h>
 #include <fstream>
 
 #include "gui.h"
-#include <linmath/linmath.h>
+#include <../third_party/linmath/linmath.h>
 #include "types.h"
 
 const char* vertex_shader_text = R"(#version 460

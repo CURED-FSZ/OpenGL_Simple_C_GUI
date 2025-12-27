@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "gl.h"
+#include "../third_party/glad/include/gl.h"
 #include "gui.h"
 #include "stb/stb_image.h"
 
