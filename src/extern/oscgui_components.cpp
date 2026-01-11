@@ -29,6 +29,10 @@ struct oscgui_font {
     text::Font* impl;
 };
 
+static Color to_cpp_color(const oscgui_color c) {
+    return Color{c.r, c.g, c.b, c.a};
+}
+
 /* =========================
    Components 操作
    ========================= */
@@ -96,6 +100,11 @@ extern "C" void oscgui_button_set_color(const oscgui_button* btn, const oscgui_c
     dynamic_cast<components::Button*>(btn->as_component->impl)->pressed_color = Color{pressed.r, pressed.g, pressed.b, pressed.a};
 }
 
+extern "C" void oscgui_button_set_text_color(const oscgui_button *btn, oscgui_color color) {
+    if (!btn || !btn->impl) return;
+    btn->impl->text_color = to_cpp_color(color);
+}
+
 extern "C" void oscgui_button_set_on_click(const oscgui_button* btn, const oscgui_click cb) {
     if (!btn) return;
     // 保存 C 回调
@@ -126,6 +135,11 @@ extern "C" void oscgui_label_destroy(const oscgui_label *label) {
 extern "C" void oscgui_label_set_color(const oscgui_label *label, const oscgui_color color) {
     if (!label) return;
     label->impl->text_color = Color{color.r, color.g, color.b, color.a};
+}
+
+void oscgui_label_set_text_color(const oscgui_label *label, const oscgui_color color) {
+    if (!label || !label->impl) return;
+    label->impl->text_color = to_cpp_color(color);
 }
 
 extern "C" void oscgui_label_set_font(const oscgui_label *label, const oscgui_font *font) {
@@ -171,6 +185,12 @@ extern "C" void oscgui_checkbox_set_color(const oscgui_checkbox *checkbox, const
     if (!checkbox) return;
     checkbox->impl->text_color = Color{color.r, color.g, color.b, color.a};
 }
+
+void oscgui_checkbox_set_text_color(const oscgui_checkbox *checkbox, const oscgui_color color) {
+    if (!checkbox || !checkbox->impl) return;
+    checkbox->impl->text_color = to_cpp_color(color);
+}
+
 
 extern "C" int oscgui_checkbox_get_checked(const oscgui_checkbox *checkbox) {
     if (!checkbox) return -1;
