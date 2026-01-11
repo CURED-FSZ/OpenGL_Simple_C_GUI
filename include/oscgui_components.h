@@ -42,6 +42,16 @@ void oscgui_button_set_color(
 );
 
 /**
+ * 设置按钮文字颜色
+ * @param btn 按钮指针
+ * @param color 文字颜色
+ */
+void oscgui_button_set_text_color(
+    const oscgui_button *btn,
+    oscgui_color color
+);
+
+/**
  * 设置按钮点击回调
  * @param btn 按钮指针
  * @param cb 点击回调
@@ -69,6 +79,14 @@ oscgui_label *oscgui_label_create(float x, float y, float w, float h);
  * @param color 颜色
  */
 void oscgui_label_set_color(const oscgui_label *label, oscgui_color color);
+
+/**
+* 设置标签文字颜色
+* @param label 标签指针
+* @param color 文字颜色
+*/
+void oscgui_label_set_text_color(const oscgui_label *label, oscgui_color color);
+
 
 /**
 * 设置标签字体
@@ -117,6 +135,14 @@ void oscgui_checkbox_set_text(const oscgui_checkbox *checkbox, const char *text)
  * @param color 颜色
  */
 void oscgui_checkbox_set_color(const oscgui_checkbox *checkbox, oscgui_color color);
+
+/**
+* 设置复选框文字颜色
+* @param checkbox 复选框指针
+* @param color 文字颜色
+*/
+void oscgui_checkbox_set_text_color(const oscgui_checkbox *checkbox, oscgui_color color);
+
 
 /**
  * 获取复选框选中状态
